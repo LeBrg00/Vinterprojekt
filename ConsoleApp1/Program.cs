@@ -9,15 +9,20 @@ Vector2 Spawn3 = new Vector2(650, 490);
 Vector2 ps = new(); // spawnpoint chosen for player attack
 List<Vector2> enemyspanw=[]; // where the enemy attacks starts
 List<Vector2> enemytarget =[]; // enemy attack end position
+Vector2 targetextra= new Vector2(20,40);
 List<Vector2> starts =[]; // start position for player attack
 List<Vector2> Ends =[]; //end position for player attack
 List<int> attackTimer = []; //how long a player attack has existed
 List<int> explosiontimmer = []; // how long a explosion has existed
 List<int> enemmyattacktimmer=[]; // how long an enemy attack timmer has existed
+List<int> enemyexpl=[]; // how long the enemys explosion has existed
 int enemytimmer=0;  // time since an enemy has spawned
 int enemyallow=90; // when an enemy gets to spawn again by time
 int enemyallow2=1; // if an enemy can spawn
-List<Vector2> city =[];
+//city locations
+List<Vector2> city =[new Vector2(20, 440), new Vector2(220, 440), new Vector2(290, 440),new Vector2(470, 440),new Vector2(540, 440),new Vector2(740, 440)];
+Texture2D citys = Raylib.LoadTexture("962317.2_city.missle1.png");//city texture
+Texture2D missile = Raylib.LoadTexture("missile.png"); //missile texture
 while(!Raylib.WindowShouldClose()){
 if (Raylib.IsKeyPressed(KeyboardKey.Space)) // what spawn point the player attack should launsh from
     {
@@ -37,10 +42,13 @@ if (Raylib.IsKeyPressed(KeyboardKey.Space)) // what spawn point the player attac
     }
     Vector2 mousePos = Raylib.GetMousePosition(); // where the player attack should target
     enemytimmer ++;
+
     if (enemytimmer==enemyallow && enemyallow2==1) {// determines if an enemy attack can spawn
     int enemyspanwx =50+Random.Shared.Next(700); // detemines spawn position
     Vector2 enemyspawn = new Vector2(enemyspanwx, 0);
     enemyspanw.Add(enemyspawn);
+    enemyexpl.Add(2);
+    enemytarget.Add(city[Random.Shared.Next(city.Count)]+targetextra);
     //Console.WriteLine(enemyspawn);
     enemmyattacktimmer.Add(0); // starts counting how long the enemy attack have existed
     enemytimmer=0; // resets the timmer
@@ -54,6 +62,7 @@ if (Raylib.IsKeyPressed(KeyboardKey.Space)) // what spawn point the player attac
     {
         enemyallow2=1;
     }
+
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.Black);
     Raylib.DrawRectangle(0, 500, 800, 100, Color.Green); //terrain
@@ -62,25 +71,37 @@ if (Raylib.IsKeyPressed(KeyboardKey.Space)) // what spawn point the player attac
     Raylib.DrawCircle(650, 510, 60, Color.Green); // terrain
     for (int i = 0; i < city.Count; i++)
     {
-        
+            Raylib.DrawTextureEx(citys, city[i], 0,2, Color.White);
     }
+
     List<int> enemyremove=[];
     for (int i = 0; i < enemyspanw.Count; i++) //enemy draw and add to delete
     {
         enemmyattacktimmer[i]++;
-        if (enemmyattacktimmer[i] > 300)
+        if (enemmyattacktimmer[i] > 360)
         {
             enemyremove.Add(i);
         }
         if (enemmyattacktimmer[i] < 300){
-      //Raylib.DrawLineEx(enemyspanw[i],-(enemyspanw[i] - enemytarget[i])*enemmyattacktimmer[i]/300+enemyspanw[i], 5, Color.Red);
+      Raylib.DrawLineEx(enemyspanw[i],-(enemyspanw[i] - enemytarget[i])*enemmyattacktimmer[i]/300+enemyspanw[i], 5, Color.Red);
         }
-    }
+        else{
+            
+            Raylib.DrawLineEx(enemyspanw[i],enemytarget[i], 5, Color.Red);
+        }
+        if (enemmyattacktimmer[i] > 300)
+        {
+            enemyexpl[i]++;
+            Raylib.DrawCircleV(enemytarget[i],enemyexpl[i]/2,Color.Red);
+        }
+
+        }
     for (int i = 0; i < enemyremove.Count; i++) //deleting finished enemy attack
     {
         enemmyattacktimmer.RemoveAt(enemyremove[i]);
         enemyspanw.RemoveAt(enemyremove[i]);
-        //enemytarget.RemoveAt(enemyremove[i]);
+        enemytarget.RemoveAt(enemyremove[i]);
+        enemyexpl.RemoveAt(enemyremove[i]);
     }
 
 
@@ -115,6 +136,7 @@ if (Raylib.IsKeyPressed(KeyboardKey.Space)) // what spawn point the player attac
         explosiontimmer[i] ++;
             Raylib.DrawCircleV(Ends[i], explosiontimmer[i]*2+20, Color.Blue);
         }
+
     }
     for (int i = 0; i < toRemove.Count; i++)// removal of old variables for player attacks
     {
