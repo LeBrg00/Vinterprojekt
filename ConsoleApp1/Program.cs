@@ -17,6 +17,7 @@ List<int> enemmyattacktimmer=[]; // how long an enemy attack timmer has existed
 int enemytimmer=0;  // time since an enemy has spawned
 int enemyallow=90; // when an enemy gets to spawn again by time
 int enemyallow2=1; // if an enemy can spawn
+List<Vector2> city =[];
 while(!Raylib.WindowShouldClose()){
 if (Raylib.IsKeyPressed(KeyboardKey.Space)) // what spawn point the player attack should launsh from
     {
@@ -59,6 +60,10 @@ if (Raylib.IsKeyPressed(KeyboardKey.Space)) // what spawn point the player attac
     Raylib.DrawCircle(150, 510, 60, Color.Green); // terrain
     Raylib.DrawCircle(400, 510, 60, Color.Green); // terrain
     Raylib.DrawCircle(650, 510, 60, Color.Green); // terrain
+    for (int i = 0; i < city.Count; i++)
+    {
+        
+    }
     List<int> enemyremove=[];
     for (int i = 0; i < enemyspanw.Count; i++) //enemy draw and add to delete
     {
