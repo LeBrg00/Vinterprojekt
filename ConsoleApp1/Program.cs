@@ -2,7 +2,7 @@
 using Raylib_cs;
 Raylib.InitWindow(800, 600, "Waa");
 Raylib.SetTargetFPS(60);
-//variables and points
+//Coordinates, scores, timers etc
 int score=0;
 Vector2 Spawn1 = new Vector2(150, 490);
 Vector2 Spawn2 = new Vector2(400, 490);
@@ -19,9 +19,8 @@ List<int> enemmyattacktimmer = []; // how long an enemy attack timmer has existe
 List<int> enemyexpl = []; // how long the enemys explosion has existed
 int enemytimmer = 0;  // time since an enemy has spawned
 int enemyallow = 90; // when an enemy gets to spawn again by time
-int enemyallow2 = 1; // if an enemy can spawn
 List<int> bbb = [1,1,1,1,1,1]; // Burn baby burn(if a city is destroyd(When all reach zero its game over)) 
-int loss=0;
+int lp=0;
 Vector2 size = new Vector2(60,40);
 //city locations
 List<Vector2> city = [new Vector2(20, 440), new Vector2(220, 440), new Vector2(290, 440), new Vector2(470, 440), new Vector2(540, 440), new Vector2(740, 440)];
@@ -31,7 +30,7 @@ Texture2D citysburned=Raylib.LoadTexture("15857756.900000036_city burned.png"); 
 Texture2D missile = Raylib.LoadTexture("missile.png"); //missile texture
 while (!Raylib.WindowShouldClose())
 {
-    if(loss==0){
+    if(lp==0){
     if (Raylib.IsKeyPressed(KeyboardKey.Space)) // what spawn point the player attack should launsh from
     {
         int S = Raylib.GetMouseX();
@@ -51,7 +50,7 @@ while (!Raylib.WindowShouldClose())
     Vector2 mousePos = Raylib.GetMousePosition(); // where the player attack should target
     enemytimmer++;
 
-    if (enemytimmer == enemyallow && enemyallow2 == 1)
+    if (enemytimmer == enemyallow)
     {// determines if an enemy attack can spawn
         int enemyspanwx = 50 + Random.Shared.Next(700); // detemines spawn position
         Vector2 enemyspawn = new Vector2(enemyspanwx, 0);
@@ -62,15 +61,10 @@ while (!Raylib.WindowShouldClose())
         enemytimmer = 0; // resets the timmer
         enemyallow = 15 + Random.Shared.Next(75); // determines time to next attack
     }
-    if (Raylib.IsKeyPressed(KeyboardKey.E) && enemyallow2 == 1) //allows to manually turn of enemy spawns
-    {
-        enemyallow2 = 0;
-    }
-    else if (Raylib.IsKeyPressed(KeyboardKey.E) && enemyallow2 == 0) //allows to manually turn on enemy spawns
-    {
-        enemyallow2 = 1;
-    }
-
+    if (Raylib.IsKeyPressed(KeyboardKey.F))
+        {
+            lp = 2;
+        }
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.Black);
     Raylib.DrawRectangle(0, 500, 800, 100, Color.Green); //terrain
@@ -188,11 +182,11 @@ while (!Raylib.WindowShouldClose())
 
     if (bbb.Sum() == 0) // end condition
     {
-        loss=1;
+        lp=1;
     }
     Raylib.EndDrawing();
     }
-    else if (loss == 1) //Game over screen
+    else if (lp == 1) //Game over screen
     {
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.Black);
@@ -213,6 +207,33 @@ while (!Raylib.WindowShouldClose())
     }
     Raylib.DrawText("Game Over",250,150,60,Color.White);// Game over
     Raylib.DrawText("Score: " +score,280,220,50,Color.White);// score
+    Raylib.EndDrawing();
+    }
+        else if (lp == 2) //Game over screen
+    {
+    Raylib.BeginDrawing();
+    Raylib.ClearBackground(Color.Black);
+    Raylib.DrawRectangle(0, 500, 800, 100, Color.Green); //terrain
+    Raylib.DrawCircle(150, 510, 60, Color.Green); // terrain
+    Raylib.DrawCircle(400, 510, 60, Color.Green); // terrain
+    Raylib.DrawCircle(650, 510, 60, Color.Green); // terrain
+    for (int i = 0; i < city.Count; i++) //"Draws" the city's
+    {
+        Rectangle cit = new (city[i], size);
+        if(bbb[i]==1){
+        Raylib.DrawTextureEx(citys, city[i], 0, 2, Color.White);
+        }
+        else
+        {
+        Raylib.DrawTextureEx(citysburned, city[i], 0, 2, Color.White);
+        }
+    }
+    Raylib.DrawText("Paused",275,150,60,Color.White);// Game over
+    Raylib.DrawText("Score: " +score,280,220,50,Color.White);// score
+    if (Raylib.IsKeyPressed(KeyboardKey.F))
+        {
+            lp = 0;
+        }
     Raylib.EndDrawing();
     }
 }
