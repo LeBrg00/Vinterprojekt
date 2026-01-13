@@ -2,6 +2,9 @@
 using Raylib_cs;
 Raylib.InitWindow(800, 600, "Waa");
 Raylib.SetTargetFPS(60);
+// To play the game you try to shoot down the incoming missiles before they hit your city.
+// You use spacebar to shoot and f to pause.
+// The game is over once all of your cities are destroyd.
 //Coordinates, scores, timers etc
 int score=0;
 Vector2 Spawn1 = new Vector2(150, 490);
@@ -20,14 +23,17 @@ List<int> enemyexpl = []; // how long the enemys explosion has existed
 int enemytimmer = 0;  // time since an enemy has spawned
 int enemyallow = 90; // when an enemy gets to spawn again by time
 List<int> bbb = [1,1,1,1,1,1]; // Burn baby burn(if a city is destroyd(When all reach zero its game over)) 
-int lp=0;
+int lp=0; // Loss/paused //  Determines state of the game like paused or game over.
 Vector2 size = new Vector2(60,40);
 //city locations
 List<Vector2> city = [new Vector2(20, 440), new Vector2(220, 440), new Vector2(290, 440), new Vector2(470, 440), new Vector2(540, 440), new Vector2(740, 440)];
 List<Vector2> citytarg = [new Vector2(20, 440), new Vector2(220, 440), new Vector2(290, 440), new Vector2(470, 440), new Vector2(540, 440), new Vector2(740, 440)];
 Texture2D citys = Raylib.LoadTexture("962317.2_city.missle1.png");//city texture
-Texture2D citysburned=Raylib.LoadTexture("15857756.900000036_city burned.png"); //burn baby burn texture
+Texture2D citysburned=Raylib.LoadTexture("15857756.900000036_city burned.png"); //burn baby burn texture(burnt city)
 Texture2D missile = Raylib.LoadTexture("missile.png"); //missile texture
+List<Vector2> Missiles = [new Vector2(125,460),new Vector2(165,460),new Vector2(105,480),new Vector2(147,480),new Vector2(190,480),
+new Vector2(375,460),new Vector2(420,460),new Vector2(360,480),new Vector2(397,480),new Vector2(435,480),
+new Vector2(625,460),new Vector2(665,460),new Vector2(605,480),new Vector2(647,480),new Vector2(690,480) ];
 while (!Raylib.WindowShouldClose())
 {
     if(lp==0){
@@ -61,7 +67,7 @@ while (!Raylib.WindowShouldClose())
         enemytimmer = 0; // resets the timmer
         enemyallow = 15 + Random.Shared.Next(75); // determines time to next attack
     }
-    if (Raylib.IsKeyPressed(KeyboardKey.F))
+    if (Raylib.IsKeyPressed(KeyboardKey.F)) // F to pause
         {
             lp = 2;
         }
@@ -71,6 +77,10 @@ while (!Raylib.WindowShouldClose())
     Raylib.DrawCircle(150, 510, 60, Color.Green); // terrain
     Raylib.DrawCircle(400, 510, 60, Color.Green); // terrain
     Raylib.DrawCircle(650, 510, 60, Color.Green); // terrain
+    for (int i = 0; i < Missiles.Count; i++)
+    {
+        Raylib.DrawTextureEx(missile, Missiles[i],0,1, Color.Blue );
+    }
     for (int i = 0; i < city.Count; i++) //"Draws" the city's
     {
         Rectangle cit = new (city[i], size);
@@ -87,6 +97,7 @@ while (!Raylib.WindowShouldClose())
             if (Raylib.CheckCollisionPointRec(enemyPos,cit))
             {
                bbb[i]=0; 
+               
             }
         }
     }
@@ -152,12 +163,13 @@ while (!Raylib.WindowShouldClose())
         float Distance = Vector2.Distance(starts[i], Ends[i]);
         if (attackTimer[i] > Distance / 10 + 20)
         {
+            if (toRemove.Contains(i) == false){
             toRemove.Add(i);
+            }
         }
         if (attackTimer[i] < Distance / 10)
-        { // line for the until target frames
+        { // line for the until target
             Raylib.DrawLineEx(starts[i], -(starts[i] - Ends[i]) * attackTimer[i] / (Distance / 10) + starts[i], 5, Color.Blue);
-
         }
         else
         {// line for the last 20 frames
@@ -194,9 +206,12 @@ while (!Raylib.WindowShouldClose())
     Raylib.DrawCircle(150, 510, 60, Color.Green); // terrain
     Raylib.DrawCircle(400, 510, 60, Color.Green); // terrain
     Raylib.DrawCircle(650, 510, 60, Color.Green); // terrain
+    for (int i = 0; i < Missiles.Count; i++)
+    {
+        Raylib.DrawTextureEx(missile, Missiles[i],0,1, Color.Blue );
+    }
     for (int i = 0; i < city.Count; i++) //"Draws" the city's
     {
-        Rectangle cit = new (city[i], size);
         if(bbb[i]==1){
         Raylib.DrawTextureEx(citys, city[i], 0, 2, Color.White);
         }
@@ -209,7 +224,7 @@ while (!Raylib.WindowShouldClose())
     Raylib.DrawText("Score: " +score,280,220,50,Color.White);// score
     Raylib.EndDrawing();
     }
-        else if (lp == 2) //Game over screen
+        else if (lp == 2) //Pause screen
     {
     Raylib.BeginDrawing();
     Raylib.ClearBackground(Color.Black);
@@ -217,9 +232,12 @@ while (!Raylib.WindowShouldClose())
     Raylib.DrawCircle(150, 510, 60, Color.Green); // terrain
     Raylib.DrawCircle(400, 510, 60, Color.Green); // terrain
     Raylib.DrawCircle(650, 510, 60, Color.Green); // terrain
+    for (int i = 0; i < Missiles.Count; i++)
+    {
+        Raylib.DrawTextureEx(missile, Missiles[i],0,1, Color.Blue );
+    }
     for (int i = 0; i < city.Count; i++) //"Draws" the city's
     {
-        Rectangle cit = new (city[i], size);
         if(bbb[i]==1){
         Raylib.DrawTextureEx(citys, city[i], 0, 2, Color.White);
         }
@@ -228,9 +246,9 @@ while (!Raylib.WindowShouldClose())
         Raylib.DrawTextureEx(citysburned, city[i], 0, 2, Color.White);
         }
     }
-    Raylib.DrawText("Paused",275,150,60,Color.White);// Game over
+    Raylib.DrawText("Paused",275,150,60,Color.White);// Paused
     Raylib.DrawText("Score: " +score,280,220,50,Color.White);// score
-    if (Raylib.IsKeyPressed(KeyboardKey.F))
+    if (Raylib.IsKeyPressed(KeyboardKey.F)) // F to unpause
         {
             lp = 0;
         }
