@@ -31,7 +31,8 @@ List<Vector2> citytarg = [new Vector2(20, 440), new Vector2(220, 440), new Vecto
 Texture2D citys = Raylib.LoadTexture("962317.2_city.missle1.png");//city texture
 Texture2D citysburned=Raylib.LoadTexture("15857756.900000036_city burned.png"); //burn baby burn texture(burnt city)
 Texture2D missile = Raylib.LoadTexture("missile.png"); //missile texture
-List<Vector2> Missiles = [new Vector2(125,460),new Vector2(165,460),new Vector2(105,480),new Vector2(147,480),new Vector2(190,480),
+List<Vector2> Missiles = // Missile locations
+[new Vector2(125,460),new Vector2(165,460),new Vector2(105,480),new Vector2(147,480),new Vector2(190,480),
 new Vector2(375,460),new Vector2(420,460),new Vector2(360,480),new Vector2(397,480),new Vector2(435,480),
 new Vector2(625,460),new Vector2(665,460),new Vector2(605,480),new Vector2(647,480),new Vector2(690,480) ];
 while (!Raylib.WindowShouldClose())
@@ -109,8 +110,13 @@ while (!Raylib.WindowShouldClose())
         Vector2 enemyPos = -(enemyspanw[i] - enemytarget[i]) * enemmyattacktimmer[i] / 300 + enemyspanw[i];
         for (int j = 0; j < Ends.Count; j++)
         {
+            int cex=0;
+            if (explosiontimmer[j] >0)
+                {
+                   cex =20;
+                }
             Vector2 circleCenter = Ends[j];
-            float radius = explosiontimmer[j] * 2 + 20;
+            float radius = explosiontimmer[j] * 2 +cex ;
 
             if (Raylib.CheckCollisionPointCircle(enemyPos, circleCenter, radius))
             {
